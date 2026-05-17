@@ -21,7 +21,7 @@ import { useAuth } from "../context/AuthContext";
  */
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { refetchUser } = useAuth();
+  const { setUser } = useAuth();
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -59,13 +59,11 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await apiClient.post("/api/auth/login", form);
+      const { token, ...userData } = res.data.data;
       // Simpan JWT token ke localStorage
-      const token = res.data?.data?.token || res.data?.token;
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-      // Update AuthContext supaya ProtectedRoute tahu user sudah login
-      await refetchUser();
+      localStorage.setItem("token", token);
+      // Set user langsung ke AuthContext — tidak perlu refetch /api/auth/me
+      setUser(userData);
       toast.success("Selamat datang di TeBuDi!! :D");
       navigate("/home");
     } catch {
