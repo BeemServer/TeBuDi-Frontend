@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios from "axios";
+import apiClient from "../services/apiClient";
 
 // Komponen dan context modular
 import LoginForm from "../components/auth/LoginForm";
@@ -58,7 +58,12 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      await axios.post("/api/auth/login", form, { withCredentials: true });
+      const res = await apiClient.post("/api/auth/login", form);
+      // Simpan JWT token ke localStorage
+      const token = res.data?.data?.token || res.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+      }
       // Update AuthContext supaya ProtectedRoute tahu user sudah login
       await refetchUser();
       toast.success("Selamat datang di TeBuDi!! :D");
