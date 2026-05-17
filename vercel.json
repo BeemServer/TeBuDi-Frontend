@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://tebudi-backend.fly.dev/api/:path*"
+    },
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
     }
   ]
 }
